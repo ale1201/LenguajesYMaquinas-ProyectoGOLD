@@ -1,0 +1,361 @@
+using gold.structures.automaton.*
+using gold.visualization.automaton.*
+
+procedure main(args:String[]) begin
+    lexer = createTransducer()
+	 testLexer(lexer)
+end
+  
+        
+
+procedure testLexer(M:ITransducer) begin
+	var sc:java.util.Scanner(System.$in)
+	while true do
+		print "----------------------------"
+		print "Enter an input string: "
+		string:=sc.nextLine()+" "   //We add a space (which is also a separator to the end of the string)
+		result:=M.acceptsString(string)    
+		tokenStream := M.getOutputString()
+		print "The lexer did "+(result?"":"not ")+" accept the string."
+		if result then print "Token Stream: "+ tokenStream end		
+	end
+end 
+
+ 
+
+
+var names
+  
+function createTransducer():ITransducer begin
+	// Lexer: reads a string with lower casae letters, digits, parenthesis, and spaces.
+	// outputs a string of {'(',')','+','*','v','n'}
+
+	
+	preKW := {"R", "RO" ,"ROB", "ROBO", "ROBOT", "ROBOT_" ,"ROBOT_R", "time", "times"} // prefixes of keywords
+	Q:= {"I","Id", "variable","Err", "variableComando", "PC", "variableAssign", "PCA", "PCT1", "PCT2", "PCT3",
+	"R", "RO" ,"ROB", "ROBO", "ROBOT", "ROBOT_" ,"ROBOT_R", "V", "VA", "VAR", "VARS", "var2", "I4",
+	"B", "BE", "BEG", "BEGI", "BEGIN", "I2", "COMMA", "I3", "E", "EN", "END", ":", "Fin", "V1",
+	"a", "as", "ass", "assi", "assig", "assign", "assign:", "A1", "number", "A2", "t", "to", "to:", "A3",
+	"m", "mo", "mov", "move", "move:", "M1", "number1",
+	"t", "tu", "tur", "turn", "turn:", "l", "le", "lef", "left", "r", "ri", "rig", "righ", "right", "ar", "aro", "arou", "aroun", "around", "T1",
+	"f", "fa", "fac", "face", "face:", "n", "no", "nor", "nort", "north", "s", "so", "sou", "sout", "south",
+	"e", "ea", "eas", "east", "w", "we", "wes", "west", "F1", "PCS", "PCN", "PCE", "PCW",
+	"p", "pu", "put", "put:", "o", "of", "of:", "P1", "P2","P3","number2", "variableComando2",
+	"B", "Ba", "Bal", "Ball", "Ballo", "Balloo", "Balloon", "Balloons", "C", "Ch", "Chi", "Chip", "Chips", "PCB", "PCC",
+	"p", "pi", "pic", "pick", "pick:",
+	"toT", "toTh", "toThe", "toThe:", "i", "in", "inD", "inDi", "inDir", "inDir:", "M2", "M3", "M4",
+	"f", "fr", "fro", "fron", "front", "b", "ba", "bac", "back", "PCM1", "PCM2", "PCM3", "PCM4",
+	"l1", "le1", "lef1", "left1", "r1", "ri1", "rig1", "righ1", "right1"}
+	
+	Σ:=('0'‥'9') ∪ ('a' ‥ 'z') ∪ ('A' ‥ 'Z') ∪ {';',' '} ∪ {'_',',',':'}
+	Out:={'(',')','+','*','v','n','R', 'Z', 'B', 'V', 'C', 'E', 'A', 'I', 'M', 'T', 'L', 'G', 'O', 'F',
+	'N', 'S', 'Y', 'W', 'P', 'J', 'H', 'K', ':', '/', '-', 'X', 'Q'} 
+	q₀:="I"
+	F:= {"Fin"}
+	return 	GDeterministicTransducer(Q,Σ,Out,q₀,F,δ,g,h)
+end
+
+function δ(q,σ) begin
+	if (q = "Err") then return "Err"
+	elseif q="ROBOT_R" and σ = ' ' then return "I2"
+	elseif q = "VARS" and σ = ' ' then return "V1"
+	elseif q="BEGIN" and σ = ' ' then return "I3"
+	elseif q = "I3" and σ = 'E' then return "E"
+	elseif q = "I4" and σ = 'E' then return "E"
+	elseif q = "E" and σ = 'N' then return "EN"
+	elseif q = "EN" and σ = 'D' then return "END"
+	elseif q = "END" then return "Fin"
+	elseif q="variable" and σ ∈ {','} then return "var2"
+	elseif q="var2" and σ =' ' then return "V1"
+	elseif q = "variable" and σ =' ' then return "I2"
+	elseif q="V1" and σ ∈ ('0' ‥ '9') then return "Err"
+	elseif q="COMMA" and σ ∈ ('0' ‥ '9') then return "Err"
+	elseif	q="variable" and σ ∈ ('0' ‥ '9') then return "variable"
+	elseif	q="V1" and σ ∈ ('a' ‥ 'z') then return "variable"
+	elseif	q="COMMA" and σ ∈ ('a' ‥ 'z') then return "variable"
+	elseif	q="variable" and σ ∈ ('a' ‥ 'z') then return "variable"
+	elseif q="I2" and σ='B' then return "B"
+	elseif q="B" and σ='E' then return "BE"
+	elseif q="BE" and σ='G' then return "BEG"
+	elseif q="BEG" and σ='I' then return "BEGI"
+	elseif q="BEGI" and σ='N' then return "BEGIN"
+	elseif q="I2" and σ='V' then return "V"
+	elseif q="V" and σ='A' then return "VA" 
+	elseif q="VA" and σ='R' then return "VAR" 
+	elseif q="VAR" and σ='S' then return "VARS" 
+	elseif q="I" and σ='R' then return "R"
+	elseif q="R" and σ='O' then return "RO" 
+	elseif q="RO" and σ='B' then return "ROB" 
+	elseif q="ROB" and σ='O' then return "ROBO" 
+	elseif q="ROBO" and σ='T' then return "ROBOT" 
+	elseif q="ROBOT" and σ='_' then return "ROBOT_" 
+	elseif q="ROBOT_" and σ='R' then return "ROBOT_R" 
+	//Verifica la palabra assign
+	elseif q = "I3" and σ='a' then return "a" 
+	elseif q = "a" and σ='s' then return "as" 
+	elseif q = "as" and σ='s' then return "ass" 
+   	elseif q = "ass" and σ='i' then return "assi"
+   	elseif q = "assi" and σ='g' then return "assig"
+   	elseif q = "assig" and σ='n' then return "assign"
+   	elseif q = "assign" and σ=':' then return "assign:"
+   	//Despues de assign: viene un espacio
+	elseif q = "assign:" and σ = ' ' then return "A1"
+   	//Despues del espacio en el assign, viene un numero, seguido de otro espacio
+	elseif q = "A1" and σ ∈ ('0' ‥ '9') then return "number"
+	elseif q = "A1" and σ ∈ ('a' ‥ 'z') then return "Err"
+	elseif q = "number" and σ ∈ ('0' ‥ '9') then return "number"
+	elseif q = "number" and σ ∈ ('a' ‥ 'z') then return "Err"
+   	elseif q = "number" and σ = ' ' then return "A2"
+  	elseif q = "A2" and σ = 't' then return "t"
+  	elseif q = "t" and σ = 'o' then return "to"
+	elseif q = "to" and σ = ':' then return "to:"
+	elseif q = "to:" and σ = ' ' then return "A3"
+	elseif q = "A3" and σ ∈ ('a' ‥ 'z') then return "variableAssign"
+	elseif q = "A3" and σ ∈ ('0' ‥ '9') then return "Err"
+	elseif q = "variableAssign" and σ ∈ ('a' ‥ 'z') then return "variableAssign"
+	elseif q = "variableAssign" and σ ∈ ('0' ‥ '9') then return "variableAssign"
+	elseif q = "variableAssign" and σ = ';' then return "PCA"
+	elseif q = "variableAssign" and σ = ' ' then return "I3"
+	elseif q = "PCA" and σ = ' ' then return "I3"
+	//Verifica la palabra move (todas las variantes)
+	elseif q = "I3" and σ = 'm' then return "m"
+	elseif q = "m" and σ = 'o' then return "mo"
+	elseif q = "mo" and σ = 'v' then return "mov"
+	elseif q = "mov" and σ = 'e' then return "move"
+	elseif q = "move" and σ = ':' then return "move:"
+	elseif q = "move:" and σ = ' ' then return "M1"
+	elseif q = "M1" and σ ∈ ('0' ‥ '9') then return "number1"
+	elseif q = "number1" and σ ∈ ('0' ‥ '9') then return "number1"
+	elseif q = "number1" and σ ∈ ('a' ‥ 'z') then return "Err"
+	elseif q = "M1" and σ ∈ ('a' ‥ 'z') then return "variableComando"
+	elseif q = "variableComando" and σ ∈ ('a' ‥ 'z') then return "variableComando"
+	elseif q = "variableComando" and σ ∈ ('0' ‥ '9') then return "variableComando"
+	elseif q = "number1" and  σ = ' ' then return "I4"
+	elseif q = "number1" and  σ = ';' then return "PC"
+	elseif q = "variableComando" and σ = ';' then return "PC"
+	elseif q = "PC" and σ = ' ' then return "I3"
+	elseif q = "variableComando" and σ = ' ' then return "I4"
+	elseif q = "I4" and  σ = 't' then return "t"
+	elseif q = "to" and  σ = 'T' then return "toT"
+	elseif q = "toT" and  σ = 'h' then return "toTh"
+	elseif q = "toTh" and  σ = 'e' then return "toThe"
+	elseif q = "toThe" and  σ = ':' then return "toThe:"
+	elseif q = "toThe:" and  σ = ' ' then return "M2"
+	elseif q = "M2" and σ = 'l' then return "l1"
+	elseif q = "l1" and σ = 'e' then return "le1"
+	elseif q = "le1" and σ = 'f' then return "lef1"
+	elseif q = "lef1" and σ = 't' then return "left1"
+	elseif q = "M2" and σ = 'r' then return "r1"
+	elseif q = "r1" and σ = 'i' then return "ri1"
+	elseif q = "ri1" and σ = 'g' then return "rig1"
+	elseif q = "rig1" and σ = 'h' then return "righ1"
+	elseif q = "righ1" and σ = 't' then return "right1"
+	elseif q = "M2" and σ = 'f' then return "f"
+	elseif q = "f" and σ = 'r' then return "fr"
+	elseif q = "fr" and σ = 'o' then return "fro"
+	elseif q = "fro" and σ = 'n' then return "fron"
+	elseif q = "fron" and σ = 't' then return "front"
+	elseif q = "M2" and σ = 'b' then return "b"
+	elseif q = "b" and σ = 'a' then return "ba"
+	elseif q = "ba" and σ = 'c' then return "bac"
+	elseif q = "bac" and σ = 'k' then return "back"
+	elseif q = "back" and  σ = ' ' then return "I3"
+	elseif q = "back" and  σ = ';' then return "PCM4"
+	elseif q = "PCM4" and σ = ' ' then return "I3"
+	elseif q = "front" and  σ = ' ' then return "I3"
+	elseif q = "front" and  σ = ';' then return "PCM1"
+	elseif q = "PCM1" and σ = ' ' then return "I3"
+	elseif q = "left1" and  σ = ' ' then return "I3"
+	elseif q = "left1" and  σ = ';' then return "PCM2"
+	elseif q = "PCM2" and σ = ' ' then return "I3"
+	elseif q = "right1" and  σ = ' ' then return "I3"
+	elseif q = "right1" and  σ = ';' then return "PCM3"
+	elseif q = "PCM3" and σ = ' ' then return "I3"
+	
+	//Verifica la palabra turn
+	elseif q = "I3" and σ = 't' then return "t"
+	elseif q = "t" and σ = 'u' then return "tu"
+	elseif q = "tu" and σ = 'r' then return "tur"
+	elseif q = "tur" and σ = 'n' then return "turn"
+	elseif q = "turn" and σ = ':' then return "turn:"
+	elseif q = "turn:" and σ = ' ' then return "T1"
+	elseif q = "T1" and σ = 'l' then return "l"
+	elseif q = "l" and σ = 'e' then return "le"
+	elseif q = "le" and σ = 'f' then return "lef"
+	elseif q = "lef" and σ = 't' then return "left"
+	elseif q = "T1" and σ = 'r' then return "r"
+	elseif q = "r" and σ = 'i' then return "ri"
+	elseif q = "ri" and σ = 'g' then return "rig"
+	elseif q = "rig" and σ = 'h' then return "righ"
+	elseif q = "righ" and σ = 't' then return "right"
+	elseif q = "T1" and σ = 'a' then return "a"
+	elseif q = "a" and σ = 'r' then return "ar"
+	elseif q = "ar" and σ = 'o' then return "aro"
+	elseif q = "aro" and σ = 'u' then return "arou"
+	elseif q = "arou" and σ = 'n' then return "aroun"
+	elseif q = "aroun" and σ = 'd' then return "around"
+	elseif q = "left" and σ = ' ' then return "I3"
+	elseif q = "right" and σ = ' ' then return "I3"
+	elseif q = "around" and σ = ' ' then return "I3"
+	elseif q = "left" and σ = ';' then return "PCT1"
+	elseif q = "right" and σ = ';' then return "PCT2"
+	elseif q = "around" and σ = ';' then return "PCT3"
+	elseif q = "PCT1" and σ = ' ' then return "I3"
+	elseif q = "PCT2" and σ = ' ' then return "I3"
+	elseif q = "PCT3" and σ = ' ' then return "I3"
+	//Verifica la palabra face
+	elseif q = "I3" and σ = 'f' then return "f"
+	elseif q = "f" and σ = 'a' then return "fa"
+	elseif q = "fa" and σ = 'c' then return "fac"
+	elseif q = "fac" and σ = 'e' then return "face"
+	elseif q = "face" and σ = ':' then return "face:"
+	elseif q = "face:" and σ = ' ' then return "F1"
+	elseif q = "F1" and σ = 'n' then return "n"
+	elseif q = "n" and σ = 'o' then return "no"
+	elseif q = "no" and σ = 'r' then return "nor"
+	elseif q = "nor" and σ = 't' then return "nort"
+	elseif q = "nort" and σ = 'h' then return "north"
+	elseif q = "north" and σ = ' ' then return "I3"
+	elseif q = "north" and σ = ';' then return "PCN"
+	elseif q = "PCN" and σ = ' ' then return "I3"
+	elseif q = "F1" and σ = 's' then return "s"
+	elseif q = "s" and σ = 'o' then return "so"
+	elseif q = "so" and σ = 'u' then return "sou"
+	elseif q = "sou" and σ = 't' then return "sout"
+	elseif q = "sout" and σ = 'h' then return "south"
+	elseif q = "south" and σ = ' ' then return "I3"
+	elseif q = "south" and σ = ';' then return "PCS"
+	elseif q = "PCS" and σ = ' ' then return "I3"
+	elseif q = "F1" and σ = 'e' then return "e"
+	elseif q = "e" and σ = 'a' then return "ea"
+	elseif q = "ea" and σ = 's' then return "eas"
+	elseif q = "eas" and σ = 't' then return "east"
+	elseif q = "east" and σ = ' ' then return "I3"
+	elseif q = "east" and σ = ';' then return "PCE"
+	elseif q = "PCE" and σ = ' ' then return "I3"
+	elseif q = "F1" and σ = 'w' then return "w"
+	elseif q = "w" and σ = 'e' then return "we"
+	elseif q = "we" and σ = 's' then return "wes"
+	elseif q = "wes" and σ = 't' then return "west"
+	elseif q = "west" and σ = ' ' then return "I3"
+	elseif q = "west" and σ = ';' then return "PCW"
+	elseif q = "PCW" and σ = ' ' then return "I3"
+	//Verifica la palabra put
+	elseif q = "I3" and σ = 'p' then return "p"
+	elseif q = "p" and σ = 'u' then return "pu"
+	elseif q = "pu" and σ = 't' then return "put"
+	elseif q = "put" and σ = ':' then return "put:"
+	elseif q = "put:" and σ = ' ' then return "P1"
+	elseif q = "P1" and σ ∈ ('0' ‥ '9') then return "number2"
+	elseif q = "number2" and σ ∈ ('0' ‥ '9') then return "number2"
+	elseif q = "number2" and σ ∈ ('a' ‥ 'z') then return "Err"
+	elseif q = "P1" and σ ∈ ('a' ‥ 'z') then return "variableComando2"
+	elseif q = "variableComando2" and σ ∈ ('a' ‥ 'z') then return "variableComando2"
+	elseif q = "variableComando2" and σ ∈ ('0' ‥ '9') then return "variableComando2"
+	elseif q = "number2" and  σ = ' ' then return "P2"
+	elseif q = "variableComando2" and σ = ' ' then return "P2"
+	elseif q = "P2" and  σ = 'o' then return "o"
+	elseif q = "o" and  σ = 'f' then return "of"
+	elseif q = "of" and  σ = ':' then return "of:"
+	elseif q = "of:" and  σ = ' ' then return "P3"
+	elseif q = "P3" and  σ = 'B' then return "B"
+	elseif q = "B" and  σ = 'a' then return "Ba"
+	elseif q = "Ba" and  σ = 'l' then return "Bal"
+	elseif q = "Bal" and  σ = 'l' then return "Ball"
+	elseif q = "Ball" and  σ = 'o' then return "Ballo"
+	elseif q = "Ballo" and  σ = 'o' then return "Balloo"
+	elseif q = "Balloo" and  σ = 'n' then return "Balloon"
+	elseif q = "Balloon" and  σ = 's' then return "Balloons"	
+	elseif q = "Balloons" and  σ = ' ' then return "I3"
+	elseif q = "Balloons" and  σ = ';' then return "PCB"
+	elseif q = "PCB" and  σ = ' ' then return "I3"
+	elseif q = "P3" and  σ = 'C' then return "C"
+	elseif q = "C" and  σ = 'h' then return "Ch"
+	elseif q = "Ch" and  σ = 'i' then return "Chi"
+	elseif q = "Chi" and  σ = 'p' then return "Chip"
+	elseif q = "Chip" and  σ = 's' then return "Chips"
+	elseif q = "Chips" and  σ = ' ' then return "I3"
+	elseif q = "Chips" and  σ = ';' then return "PCC"
+	elseif q = "PCB" and  σ = ' ' then return "I3"
+	//Verifica la palabra pick
+	elseif q = "p" and σ = 'i' then return "pi"
+	elseif q = "pi" and σ = 'c' then return "pic"
+	elseif q = "pic" and σ = 'k' then return "pick"
+	elseif q = "pick" and σ = ':' then return "pick:"
+	elseif q = "pick:" and σ = ' ' then return "P1"
+	
+	else  return "Id"
+    end	
+end 
+
+
+
+function g(q) begin
+	return λ
+end
+
+function h(q,σ) begin
+	var s: String
+	s := λ
+
+	if q ∉ {"Err"} and σ ∈ {'(',')',' '} then
+		if σ ∉ {' '} then  s=String.valueOf(σ) end
+		if q=="I" then return s
+		elseif q=="variable" then return "V"+s
+		elseif q=="ROBOT_R" then return "R"+s
+		elseif q=="VARS" then return "Z"+s
+		elseif q=="BEGIN" then return "B"+s
+		elseif q=="var2" then return "V"+"C"+s
+		elseif q == "END" then return ")"+"E"
+		elseif q == "assign:" then return "A"+"("+s
+		elseif q=="number" then return "I"+s
+		elseif q=="number1" then return "I"+s
+		elseif q=="to:" then return "C"+s
+		elseif q=="V1" then return "A"+"A"+"A"+s
+		elseif q == "variableAssign" then return "V"+s
+		elseif q == "variableComando" then return "I"+s
+		elseif q=="PC" then return "I"+")"+s
+		elseif q=="PCA" then return "V"+")"+s
+		elseif q == "move:" then return "M"+"("+s
+		elseif q=="turn:" then return "T"+"("+s
+		elseif q=="left" then return "L"+s
+		elseif q=="right" then return "G"+s
+		elseif q=="around" then return "O"+s
+		elseif q=="PCT1" then return "L"+")"+s
+		elseif q=="PCT2" then return "G"+")"+s
+		elseif q=="PCT3" then return "O"+")"+s
+		elseif q=="face:" then return "F"+"("+s
+		elseif q=="PCN" then return "N"+")"+s
+		elseif q=="PCS" then return "S"+")"+s
+		elseif q=="PCE" then return "Y"+")"+s
+		elseif q=="PCW" then return "W"+")"+s
+		elseif q=="north" then return "N"+s
+		elseif q=="south" then return "S"+s
+		elseif q=="east" then return "Y"+s
+		elseif q=="west" then return "W"+s
+		elseif q=="put:" then return "P"+"("+s
+		elseif q == "variableComando2" then return "I"+s
+		elseif q=="number2" then return "I"+s
+		elseif q=="Balloons" then return "J"+s
+		elseif q=="PCB" then return "J"+")"+s
+		elseif q=="Chips" then return "H"+s
+		elseif q=="PCC" then return "H"+")"+s
+		elseif q=="of:" then return ":"+s
+		elseif q=="pick:" then return "K"+"("+s
+		elseif q=="toThe:" then return "/"+s
+		elseif q=="back" then return "Q"+s
+		elseif q=="PCM4" then return "Q"+")"+s
+		elseif q=="front" then return "X"+s
+		elseif q=="PCM1" then return "X"+")"+s
+		elseif q=="left1" then return "L"+s
+		elseif q=="PCM2" then return "L"+")"+s
+		elseif q=="right1" then return "G"+s
+		elseif q=="PCM3" then return "G"+")"+s
+			
+		
+		
+		else return "v"+s
+ 		end
+	else return  λ
+	end
+end
