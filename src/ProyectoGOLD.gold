@@ -74,15 +74,18 @@ function δ(q,σ) begin
 	elseif	q="V1" and σ ∈ ('a' ‥ 'z') then return "variable"
 	elseif	q="COMMA" and σ ∈ ('a' ‥ 'z') then return "variable"
 	elseif	q="variable" and σ ∈ ('a' ‥ 'z') then return "variable"
+	//Lectura BEGIN
 	elseif q="I2" and σ='B' then return "B"
 	elseif q="B" and σ='E' then return "BE"
 	elseif q="BE" and σ='G' then return "BEG"
 	elseif q="BEG" and σ='I' then return "BEGI"
 	elseif q="BEGI" and σ='N' then return "BEGIN"
+	//Lectura VARS
 	elseif q="I2" and σ='V' then return "V"
 	elseif q="V" and σ='A' then return "VA" 
 	elseif q="VA" and σ='R' then return "VAR" 
 	elseif q="VAR" and σ='S' then return "VARS" 
+	//Lectura ROBOT_R
 	elseif q="I" and σ='R' then return "R"
 	elseif q="R" and σ='O' then return "RO" 
 	elseif q="RO" and σ='B' then return "ROB" 
@@ -171,6 +174,14 @@ function δ(q,σ) begin
 	elseif q = "right1" and  σ = ' ' then return "I3"
 	elseif q = "right1" and  σ = ';' then return "PCM3"
 	elseif q = "PCM3" and σ = ' ' then return "I3"
+	elseif q = "I4" and  σ = 'i' then return "i"
+	elseif q = "i" and  σ = 'n' then return "in"
+	elseif q = "in" and  σ = 'D' then return "inD"
+	elseif q = "inD" and  σ = 'i' then return "inDi"
+	elseif q = "inDi" and  σ = 'r' then return "inDir"
+	elseif q = "inDir" and  σ = ':' then return "inDir:"
+	elseif q = "inDir:" and  σ = ' ' then return "F1"
+	
 	
 	//Verifica la palabra turn
 	elseif q = "I3" and σ = 't' then return "t"
@@ -311,7 +322,6 @@ function h(q,σ) begin
 		elseif q=="number" then return "I"+s
 		elseif q=="number1" then return "I"+s
 		elseif q=="to:" then return "C"+s
-		elseif q=="V1" then return "A"+"A"+"A"+s
 		elseif q == "variableAssign" then return "V"+s
 		elseif q == "variableComando" then return "I"+s
 		elseif q=="PC" then return "I"+")"+s
@@ -351,6 +361,7 @@ function h(q,σ) begin
 		elseif q=="PCM2" then return "L"+")"+s
 		elseif q=="right1" then return "G"+s
 		elseif q=="PCM3" then return "G"+")"+s
+		elseif q=="inDir:" then return "-"+s
 			
 		
 		
