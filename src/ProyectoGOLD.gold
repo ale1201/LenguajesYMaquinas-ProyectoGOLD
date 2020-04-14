@@ -33,7 +33,7 @@ function createTransducer():ITransducer begin
 	
 	preKW := {"R", "RO" ,"ROB", "ROBO", "ROBOT", "ROBOT_" ,"ROBOT_R", "time", "times"} // prefixes of keywords
 	Q:= {"I","Id", "variable","Err", "variableComando", "PC", "variableAssign", "PCA", "PCT1", "PCT2", "PCT3",
-	"R", "RO" ,"ROB", "ROBO", "ROBOT", "ROBOT_" ,"ROBOT_R", "V", "VA", "VAR", "VARS", "var2", "I4",
+	"R", "RO" ,"ROB", "ROBO", "ROBOT", "ROBOT_" ,"ROBOT_R", "V", "VA", "VAR", "VARS", "var2", "I4", "I5",
 	"B", "BE", "BEG", "BEGI", "BEGIN", "I2", "COMMA", "I3", "E", "EN", "END", ":", "Fin", "V1",
 	"a", "as", "ass", "assi", "assig", "assign", "assign:", "A1", "number", "A2", "t", "to", "to:", "A3",
 	"m", "mo", "mov", "move", "move:", "M1", "number1",
@@ -45,13 +45,17 @@ function createTransducer():ITransducer begin
 	"p", "pi", "pic", "pick", "pick:",
 	"toT", "toTh", "toThe", "toThe:", "i", "in", "inD", "inDi", "inDir", "inDir:", "M2", "M3", "M4",
 	"f", "fr", "fro", "fron", "front", "b", "ba", "bac", "back", "PCM1", "PCM2", "PCM3", "PCM4",
-	"l1", "le1", "lef1", "left1", "r1", "ri1", "rig1", "righ1", "right1"}
+	"l1", "le1", "lef1", "left1", "r1", "ri1", "rig1", "righ1", "right1",
+	"i1","if", "if:", "th", "the", "then", "then:", "e", "el", "els", "else", "else:", "E1", "E2",
+	"faci", "facin", "facing", "facing:", "c","ca", "can", "canP", "canPu", "canPut", "canPut:",
+	"canPi", "canPic", "canPick", "canPick:", "canM", "canMo", "canMov", "canMove", "canMove:", "not", 
+	"CO1", "CO2", "CO3", "CO4", "CO5"}
 	
 	Σ:=('0'‥'9') ∪ ('a' ‥ 'z') ∪ ('A' ‥ 'Z') ∪ {';',' '} ∪ {'_',',',':'}
 	Out:={'(',')','+','*','v','n','R', 'Z', 'B', 'V', 'C', 'E', 'A', 'I', 'M', 'T', 'L', 'G', 'O', 'F',
-	'N', 'S', 'Y', 'W', 'P', 'J', 'H', 'K', ':', '/', '-', 'X', 'Q'} 
+	'N', 'S', 'Y', 'W', 'P', 'J', 'H', 'K', ':', '/', '-', 'X', 'Q', '-', 'f', '<', '>', 'o', 'n'} 
 	q₀:="I"
-	F:= {"Fin"}
+	F:= {"Fin", "I4"}
 	return 	GDeterministicTransducer(Q,Σ,Out,q₀,F,δ,g,h)
 end
 
@@ -64,7 +68,9 @@ function δ(q,σ) begin
 	elseif q = "I4" and σ = 'E' then return "E"
 	elseif q = "E" and σ = 'N' then return "EN"
 	elseif q = "EN" and σ = 'D' then return "END"
-	elseif q = "END" then return "Fin"
+	elseif q = "END" and σ = ' ' then return "I4"
+	elseif q = "END" and σ = ';' then return "CO2"
+	elseif q = "CO2" and σ = ' ' then return "I3"
 	elseif q="variable" and σ ∈ {','} then return "var2"
 	elseif q="var2" and σ =' ' then return "V1"
 	elseif q = "variable" and σ =' ' then return "I2"
@@ -226,7 +232,7 @@ function δ(q,σ) begin
 	elseif q = "no" and σ = 'r' then return "nor"
 	elseif q = "nor" and σ = 't' then return "nort"
 	elseif q = "nort" and σ = 'h' then return "north"
-	elseif q = "north" and σ = ' ' then return "I3"
+	elseif q = "north" and σ = ' ' then return "I4"
 	elseif q = "north" and σ = ';' then return "PCN"
 	elseif q = "PCN" and σ = ' ' then return "I3"
 	elseif q = "F1" and σ = 's' then return "s"
@@ -234,21 +240,21 @@ function δ(q,σ) begin
 	elseif q = "so" and σ = 'u' then return "sou"
 	elseif q = "sou" and σ = 't' then return "sout"
 	elseif q = "sout" and σ = 'h' then return "south"
-	elseif q = "south" and σ = ' ' then return "I3"
+	elseif q = "south" and σ = ' ' then return "I4"
 	elseif q = "south" and σ = ';' then return "PCS"
 	elseif q = "PCS" and σ = ' ' then return "I3"
 	elseif q = "F1" and σ = 'e' then return "e"
 	elseif q = "e" and σ = 'a' then return "ea"
 	elseif q = "ea" and σ = 's' then return "eas"
 	elseif q = "eas" and σ = 't' then return "east"
-	elseif q = "east" and σ = ' ' then return "I3"
+	elseif q = "east" and σ = ' ' then return "I4"
 	elseif q = "east" and σ = ';' then return "PCE"
 	elseif q = "PCE" and σ = ' ' then return "I3"
 	elseif q = "F1" and σ = 'w' then return "w"
 	elseif q = "w" and σ = 'e' then return "we"
 	elseif q = "we" and σ = 's' then return "wes"
 	elseif q = "wes" and σ = 't' then return "west"
-	elseif q = "west" and σ = ' ' then return "I3"
+	elseif q = "west" and σ = ' ' then return "I4"
 	elseif q = "west" and σ = ';' then return "PCW"
 	elseif q = "PCW" and σ = ' ' then return "I3"
 	//Verifica la palabra put
@@ -294,6 +300,52 @@ function δ(q,σ) begin
 	elseif q = "pic" and σ = 'k' then return "pick"
 	elseif q = "pick" and σ = ':' then return "pick:"
 	elseif q = "pick:" and σ = ' ' then return "P1"
+	//ESTRUCTURAS DE CONTROL
+	elseif q = "I3" and σ = 'i' then return "i1"
+	elseif q = "i1" and σ = 'f' then return "if"
+	elseif q = "if" and σ = ':' then return "if:"
+	elseif q = "if:" and σ = ' ' then return "E1"
+	elseif q = "I3" and σ = 't' then return "t"
+	elseif q = "I4" and σ = 't' then return "t"
+	elseif q = "t" and σ = 'h' then return "th"
+	elseif q = "th" and σ = 'e' then return "the"
+	elseif q = "the" and σ = 'n' then return "then"
+	elseif q = "then" and σ = ':' then return "then:"
+	elseif q = "then:" and σ = ' ' then return "I2"
+	elseif q = "I3" and σ = 'e' then return "e"
+	elseif q = "I4" and σ = 'e' then return "e"
+	elseif q = "e" and σ = 'l' then return "el"
+	elseif q = "el" and σ = 's' then return "els"
+	elseif q = "els" and σ = 'e' then return "else"
+	elseif q = "else" and σ = ':' then return "else:"
+	elseif q = "else:" and σ = ' ' then return "I2"
+		
+	//CONDICIONES
+	elseif q = "E1" and σ = 'f' then return "f" 
+	elseif q = "fac" and σ = 'i' then return "faci" 
+	elseif q = "faci" and σ = 'n' then return "facin" 
+	elseif q = "facin" and σ = 'g' then return "facing" 
+	elseif q = "facing" and σ = ':' then return "facing:" 
+	elseif q = "facing:" and σ = ' ' then return "F1"
+		
+	elseif q = "E1" and σ = 'c' then return "c" 
+	elseif q = "c" and σ = 'a' then return "ca" 
+	elseif q = "ca" and σ = 'n' then return "can" 
+	elseif q = "can" and σ = 'P' then return "canP" 
+	elseif q = "canP" and σ = 'u' then return "canPu"
+	elseif q = "canPu" and σ = 't' then return "canPut"
+	elseif q = "canPut" and σ = ':' then return "canPut:"
+		
+	elseif q = "canP" and σ = 'i' then return "canPi"
+	elseif q = "canPi" and σ = 'c' then return "canPic"
+	elseif q = "canPic" and σ = 'k' then return "canPick"
+	elseif q = "canPick" and σ = ':' then return "canPick:"
+	
+	elseif q = "can" and σ = 'M' then return "canM"
+	elseif q = "canM" and σ = 'o' then return "canMo"
+	elseif q = "canMo" and σ = 'v' then return "canMov"
+	elseif q = "canMov" and σ = 'e' then return "canMove"
+	elseif q = "canMove" and σ = ':' then return "canMove:"
 	
 	else  return "Id"
     end	
@@ -362,6 +414,11 @@ function h(q,σ) begin
 		elseif q=="right1" then return "G"+s
 		elseif q=="PCM3" then return "G"+")"+s
 		elseif q=="inDir:" then return "-"+s
+		elseif q=="if:" then return "-"+"I"+"f"+"("+s
+		elseif q=="then:" then return ")"+"-"+">"+"("+s
+		elseif q=="else:" then return ")"+"<"+"-"+"("+s
+		elseif q=="facing:" then return "C"+"o"+"n"+"F"+":"+s
+		elseif q=="CO2" then return ")"+"E"+")"+s
 			
 		
 		
