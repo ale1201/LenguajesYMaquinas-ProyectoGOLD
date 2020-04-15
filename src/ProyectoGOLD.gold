@@ -48,12 +48,14 @@ function createTransducer():ITransducer begin
 	"l1", "le1", "lef1", "left1", "r1", "ri1", "rig1", "righ1", "right1",
 	"i1","if", "if:", "th", "the", "then", "then:", "e", "el", "els", "else", "else:", "E1", "E2",
 	"faci", "facin", "facing", "facing:", "c","ca", "can", "canP", "canPu", "canPut", "canPut:",
-	"canPi", "canPic", "canPick", "canPick:", "canM", "canMo", "canMov", "canMove", "canMove:", "not", 
-	"CO1", "CO2", "CO3", "CO4", "CO5"}
+	"canPi", "canPic", "canPick", "canPick:", "canM", "canMo", "canMov", "canMove", "canMove:", "not", "not:", 
+	"CO1", "CO2", "CO3","wh", "whi", "whil", "while", "while:", "d", "do", "do:", "re", "rep", "repe", "repea", 
+	"repeat", "repeat:", "ti", "tim", "time", "times", "times:"}
 	
 	Σ:=('0'‥'9') ∪ ('a' ‥ 'z') ∪ ('A' ‥ 'Z') ∪ {';',' '} ∪ {'_',',',':'}
 	Out:={'(',')','+','*','v','n','R', 'Z', 'B', 'V', 'C', 'E', 'A', 'I', 'M', 'T', 'L', 'G', 'O', 'F',
-	'N', 'S', 'Y', 'W', 'P', 'J', 'H', 'K', ':', '/', '-', 'X', 'Q', '-', 'f', '<', '>', 'o', 'n'} 
+	'N', 'S', 'Y', 'W', 'P', 'J', 'H', 'K', ':', '/', '-', 'X', 'Q', '-', 'f', '<', '>', 'o', 'n', '!','D',
+	'h', 'e'} 
 	q₀:="I"
 	F:= {"Fin", "I4"}
 	return 	GDeterministicTransducer(Q,Σ,Out,q₀,F,δ,g,h)
@@ -283,7 +285,7 @@ function δ(q,σ) begin
 	elseif q = "Ballo" and  σ = 'o' then return "Balloo"
 	elseif q = "Balloo" and  σ = 'n' then return "Balloon"
 	elseif q = "Balloon" and  σ = 's' then return "Balloons"	
-	elseif q = "Balloons" and  σ = ' ' then return "I3"
+	elseif q = "Balloons" and  σ = ' ' then return "I4"
 	elseif q = "Balloons" and  σ = ';' then return "PCB"
 	elseif q = "PCB" and  σ = ' ' then return "I3"
 	elseif q = "P3" and  σ = 'C' then return "C"
@@ -291,7 +293,7 @@ function δ(q,σ) begin
 	elseif q = "Ch" and  σ = 'i' then return "Chi"
 	elseif q = "Chi" and  σ = 'p' then return "Chip"
 	elseif q = "Chip" and  σ = 's' then return "Chips"
-	elseif q = "Chips" and  σ = ' ' then return "I3"
+	elseif q = "Chips" and  σ = ' ' then return "I4"
 	elseif q = "Chips" and  σ = ';' then return "PCC"
 	elseif q = "PCB" and  σ = ' ' then return "I3"
 	//Verifica la palabra pick
@@ -301,6 +303,7 @@ function δ(q,σ) begin
 	elseif q = "pick" and σ = ':' then return "pick:"
 	elseif q = "pick:" and σ = ' ' then return "P1"
 	//ESTRUCTURAS DE CONTROL
+	//Conditional
 	elseif q = "I3" and σ = 'i' then return "i1"
 	elseif q = "i1" and σ = 'f' then return "if"
 	elseif q = "if" and σ = ':' then return "if:"
@@ -319,7 +322,47 @@ function δ(q,σ) begin
 	elseif q = "els" and σ = 'e' then return "else"
 	elseif q = "else" and σ = ':' then return "else:"
 	elseif q = "else:" and σ = ' ' then return "I2"
+	//Loop
+	elseif q = "I3" and σ = 'w' then return "w"
+	elseif q = "w" and σ = 'h' then return "wh"
+	elseif q = "wh" and σ = 'i' then return "whi"
+	elseif q = "whi" and σ = 'l' then return "whil"
+	elseif q = "whil" and σ = 'e' then return "while"
+	elseif q = "while" and σ = ':' then return "while:"
+	elseif q = "while:" and σ = ' ' then return "E1"
+	elseif q = "I3" and σ = 'd' then return "d"
+	elseif q = "I4" and σ = 'd' then return "d"
+	elseif q = "d" and σ = 'o' then return "do"
+	elseif q = "do" and σ = ':' then return "do:"
+	elseif q = "do:" and σ = ' ' then return "I2"
+	//RepeatTimes
+	elseif q = "I3" and σ = 'r' then return "r"
+	elseif q = "r" and σ = 'e' then return "re"
+	elseif q = "re" and σ = 'p' then return "rep"
+	elseif q = "rep" and σ = 'e' then return "repe"
+	elseif q = "repe" and σ = 'a' then return "repea"
+	elseif q = "repea" and σ = 't' then return "repeat"
+	elseif q = "repeat" and σ = ':' then return "repeat:"
+	elseif q = "repeat:" and σ = ' ' then return "I2"
+	elseif q = "I3" and σ = 't' then return "t"
+	elseif q = "I4" and σ = 't' then return "t"
+	elseif q = "t" and σ = 'i' then return "ti"
+	elseif q = "ti" and σ = 'm' then return "tim"
+	elseif q = "tim" and σ = 'e' then return "time"
+	elseif q = "time" and σ = 's' then return "times"
+	elseif q = "times" and σ = ':' then return "times:"
+	elseif q = "times:" and σ = ' ' then return "CO3"
+	
+	elseif q = "CO3" and σ ∈ ('0' ‥ '9') then return "number1"
+	elseif q = "number1" and σ ∈ ('0' ‥ '9') then return "number1"
+	elseif q = "number1" and σ ∈ ('a' ‥ 'z') then return "Err"
+	elseif q = "CO3" and σ ∈ ('a' ‥ 'z') then return "variableComando"
+	elseif q = "variableComando" and σ ∈ ('a' ‥ 'z') then return "variableComando"
+	elseif q = "variableComando" and σ ∈ ('0' ‥ '9') then return "variableComando"
+	elseif q = "number1" and  σ = ' ' then return "I4"
+	elseif q = "number1" and  σ = ';' then return "PC"
 		
+	
 	//CONDICIONES
 	elseif q = "E1" and σ = 'f' then return "f" 
 	elseif q = "fac" and σ = 'i' then return "faci" 
@@ -335,17 +378,26 @@ function δ(q,σ) begin
 	elseif q = "canP" and σ = 'u' then return "canPu"
 	elseif q = "canPu" and σ = 't' then return "canPut"
 	elseif q = "canPut" and σ = ':' then return "canPut:"
+	elseif q = "canPut:" and σ = ' ' then return "P1"
 		
 	elseif q = "canP" and σ = 'i' then return "canPi"
 	elseif q = "canPi" and σ = 'c' then return "canPic"
 	elseif q = "canPic" and σ = 'k' then return "canPick"
 	elseif q = "canPick" and σ = ':' then return "canPick:"
+	elseif q = "canPick:" and σ = ' ' then return "P1"
 	
 	elseif q = "can" and σ = 'M' then return "canM"
 	elseif q = "canM" and σ = 'o' then return "canMo"
 	elseif q = "canMo" and σ = 'v' then return "canMov"
 	elseif q = "canMov" and σ = 'e' then return "canMove"
 	elseif q = "canMove" and σ = ':' then return "canMove:"
+	elseif q = "canMove:" and σ = ' ' then return "F1"
+	
+	elseif q = "E1" and σ = 'n' then return "n" 
+	elseif q = "n" and σ = 'o' then return "no" 
+	elseif q = "no" and σ = 't' then return "not"
+	elseif q = "not" and σ = ':' then return "not:" 
+	elseif q = "not:" and σ = ' ' then return "E1" 
 	
 	else  return "Id"
     end	
@@ -418,7 +470,15 @@ function h(q,σ) begin
 		elseif q=="then:" then return ")"+"-"+">"+"("+s
 		elseif q=="else:" then return ")"+"<"+"-"+"("+s
 		elseif q=="facing:" then return "C"+"o"+"n"+"F"+":"+s
+		elseif q=="canPut:" then return "C"+"o"+"n"+"P"+":"+s
+		elseif q=="canPick:" then return "C"+"o"+"n"+"K"+":"+s
+		elseif q=="canMove:" then return "C"+"o"+"n"+"M"+":"+s
+		elseif q=="not:" then return "!"+"C"+"o"+"n"+"N"+":"+s
 		elseif q=="CO2" then return ")"+"E"+")"+s
+		elseif q=="while:" then return "-"+"W"+"h"+"("+s
+		elseif q=="do:" then return ")"+"D"+"("+s
+		elseif q=="repeat:" then return "-"+"R"+"e"+"("+s
+		elseif q=="times:" then return ")"+"T"+"*"+"("+s
 			
 		
 		

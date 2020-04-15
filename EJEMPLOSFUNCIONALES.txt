@@ -1,0 +1,9 @@
+
+-------------------------------
+ROBOT_R BEGIN while: facing: east do: BEGIN assign: 5 to: a11; put: 5 of: Balloons END END
+
+ROBOT_R BEGIN move: 5; while: facing: east do: BEGIN assign: 5 to: a11; put: 5 of: Balloons END; turn: around; face: east END
+
+ROBOT_R BEGIN move: 5; while: facing: east do: BEGIN assign: 5 to: a11; put: 5 of: Balloons; while: facing: east do: BEGIN move: 5; if: canMove: south then: BEGIN pick: 5 of: Chips END else: BEGIN move: 2 END END END; turn: around; face: east END
+
+ROBOT_R VARS b12, a11, c BEGIN move: 5; turn: around; repeat: BEGIN move: 5 END times: 5; pick: a1 of: Balloons; if: not: facing: south then: BEGIN pick: b4 of: Chips END else: BEGIN move: 5; while: canPick: 2 of: Chips do: BEGIN assign: 5 to: a1 END END END
