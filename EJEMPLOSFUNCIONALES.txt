@@ -1,4 +1,69 @@
+Alejandra Pabon   -  201728807
+Santiago Fajardo  -  201813423
 
+-------------------------------
+NOTAS IMPORTANTES
+-------------------------------
+1) Si se desea ejecutar correctamente el automata, se debe escribir UN ESPACIO después de cada instrucción. 
+2) Los bloques de instrucción se deben separar por ;
+3) El automata es Case Sensitive, por lo tanto si se escribe IF, en lugar de if, va a generar un error
+
+
+-------------------------------
+INSTRUCCIONES BASICAS
+-------------------------------
+ROBOT_R = R
+VARS = Z
+BEGING = B
+ASSIGN = A
+MOVE = M
+TURN = T
+FACE = F
+PUT = P
+PICK = K
+LEFT = L
+RIGHT = G
+FRONT = X
+NORTH = N
+SOUTH = S
+EAST = Y
+WEST = W
+BALLONS = B
+CHIPS = H
+OF = :
+TO: = C
+TO_THE = /
+IN_DIR = -
+NUMERO/VARIABLE = I
+COMA(,) = C
+PUNTO_COMA(;) = )
+DOS_PUNTOS(:) = (
+NUMERO = I
+VARIABLE = V
+END = E
+
+-------------------------------
+ESTRUCTURAS DE CONTROL 
+-------------------------------
+WHILE = WH
+DO: D
+IF = If
+NOT = !ConN
+THEN = ->
+ELSE = <-
+REPEAT = Re 
+TIMES = T*
+
+-------------------------------
+CONDICIONES
+-------------------------------
+CAN_MOVE = ConM
+CAN_PICK = ConK
+CAN_PUT = ConP
+FACING = ConF
+
+-------------------------------
+EJEMPLOS
 -------------------------------
 ROBOT_R BEGIN while: facing: east do: BEGIN assign: 5 to: a11; put: 5 of: Balloons END END
 
