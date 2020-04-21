@@ -4,7 +4,8 @@ Santiago Fajardo  -  201813423
 -------------------------------
 NOTAS IMPORTANTES
 -------------------------------
-1) Si se desea ejecutar correctamente el automata, se debe escribir UN ESPACIO después de cada instrucción. 
+1) Si se desea ejecutar correctamente el automata, se debe escribir UN ESPACIO después de cada instrucción. A demás, si se desea escribir una coma ',' o un punto y coma ';'
+   esta debe ir pegada a la instrucción y después de escribirla un espacio. Ejemplo ins1, ins2; assign...
 2) Los bloques de instrucción se deben separar por ;
 3) El automata es Case Sensitive, por lo tanto si se escribe IF, en lugar de if, va a generar un error
 
@@ -45,13 +46,13 @@ END = E
 -------------------------------
 ESTRUCTURAS DE CONTROL 
 -------------------------------
-WHILE = WH
-DO: D
-IF = If
+WHILE = -WH
+DO: -D
+IF = -If
 NOT = !ConN
 THEN = ->
 ELSE = <-
-REPEAT = Re 
+REPEAT = -Re 
 TIMES = T*
 
 -------------------------------
